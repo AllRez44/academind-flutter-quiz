@@ -6,23 +6,27 @@ class QuizApp extends StatefulWidget {
   const QuizApp({super.key});
 
   @override
-  State<StatefulWidget> createState(){
+  State<StatefulWidget> createState() {
     return _QuizAppState();
   }
 }
 
 class _QuizAppState extends State {
   @override
-  Widget build(BuildContext context){
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.deepPurple, Colors.deepPurpleAccent],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple, Colors.deepPurpleAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: const StartScreen(),
         ),
       ),
-      child: const StartScreen(),
     );
   }
 }
