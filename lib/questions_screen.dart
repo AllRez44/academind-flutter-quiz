@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quiz/data/questions.dart';
+import 'package:flutter_quiz/models/quiz_question.dart';
 
 class QuestionsScreen extends StatefulWidget {
-  const QuestionsScreen({super.key});
+  QuestionsScreen(this.selectedAnswers, this.finishQuiz, {super.key});
+
+  List<String> selectedAnswers = [];
+  void Function() finishQuiz;
 
   @override
   State<StatefulWidget> createState() {
@@ -9,52 +14,41 @@ class QuestionsScreen extends StatefulWidget {
   }
 }
 
-class _QuestionScreenState extends State {
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 300,
-            child: Text(
-              'What are the main building blocks of Flutter UIs?',
-              style: TextStyle(
-                color: Color.fromARGB(150, 237, 223, 252),
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          SizedBox(height: 40),
-          Alternative('Functions'),
-          Alternative('Components'),
-          Alternative('Blocks'),
-          Alternative('Widgets'),
-        ],
-      ),
-    );
+class _QuestionScreenState extends State<QuestionsScreen> {
+  int currentQuestionIndex = 0;
+  bool hasFinished = false;
+
+  void selectAnswer(String selectedAnswer) {
+    widget.selectedAnswers.add(selectedAnswer);
+    setState(() {
+      if (questions.elementAtOrNull(currentQuestionIndex + 1) != null) {
+        currentQuestionIndex++;
+      } else if (questions.length == currentQuestionIndex + 1) {
+        hasFinished = true;
+        widget.finishQuiz();
+      } else {
+        // 'Something went wrong on Answer Button'
+        throw Error();
+      }
+    });
   }
-}
-
-class Alternative extends StatelessWidget {
-  const Alternative(this.text, {super.key});
-
-  final String text;
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 24, 0, 80),
-          fixedSize: const Size.fromWidth(300),
-          padding: const EdgeInsets.symmetric(horizontal: 50)),
-      onPressed: null,
-      child: Text(
-        text,
-        style: const TextStyle(color: Colors.white),
+    QuizQuestion currentQuestion = questions[currentQuestionIndex];
+    for (var answer in currentQuestion.answers) {
+      answer.setOnSelectAnswer(
+        () => selectAnswer(answer.text),
+      );
+    }
+    // Suffles the current answers list
+    currentQuestion.answers.shuffle();
+
+    return SizedBox(
+      width: double.infinity,
+      child: Container(
+        margin: const EdgeInsets.all(40),
+        child: currentQuestion,
       ),
     );
   }
